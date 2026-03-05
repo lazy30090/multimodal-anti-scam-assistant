@@ -1,0 +1,9 @@
+package com.juntong.multimodalantiscamassistant.module.guardian.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.juntong.multimodalantiscamassistant.module.guardian.entity.GuardianUserBind;
+import org.apache.ibatis.annotations.Mapper;
+
+@Mapper
+public interface GuardianUserBindMapper extends BaseMapper<GuardianUserBind> {
+}
