@@ -26,8 +26,9 @@
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
+| POST | `/api/guardian/wx-login` | 微信小程序登录获取Token |
 | POST | `/api/guardian/bind` | 绑定监护人（姓名、电话、关系） |
-| DELETE | `/api/guardian/unbind` | 解绑监护人 |
+| DELETE | `/api/guardian/unbind/{guardianId}` | 解绑监护人 |
 | GET | `/api/guardian/whitelist` | 获取信任联系人/账号白名单（降低误报） |
 | POST | `/api/guardian/whitelist` | 签加信任联系人/账号到白名单 |
 | PUT | `/api/guardian/notify-policy` | 设置通知偏好（实时推送 vs 周期汇总） |

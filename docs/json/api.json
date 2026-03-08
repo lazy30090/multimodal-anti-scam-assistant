@@ -1,0 +1,1773 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "多模态反诈智能助手 API",
+    "description": "后端接口文档，含用户、监护人、预警、报告等模块",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8081",
+      "description": "Generated server url"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "4. 智能对话模块",
+      "description": "处理多模态反诈咨询对话，支持文本、图片、语音及链接输入"
+    },
+    {
+      "name": "7. 安全报告模块",
+      "description": "生成并查看多维度的反诈监测定期报告"
+    },
+    {
+      "name": "1. 用户与角色管理",
+      "description": "处理用户注册、登录、个人画像及风险配置"
+    },
+    {
+      "name": "2. 监护人联动管理",
+      "description": "处理监护人端（小程序）的登录、绑定关系、白名单、安全周报及远程干预"
+    },
+    {
+      "name": "5. 多模态检测模块",
+      "description": "提供单次消息检测及批量测评自动化工具，支持文本、图片及语音"
+    },
+    {
+      "name": "3. 风险预警模块",
+      "description": "处理风险历史记录查询及详细判定依据展示"
+    },
+    {
+      "name": "6. 知识库进化模块",
+      "description": "支持上传多模态诈骗案例，驱动算法模型的知识增量学习与进化"
+    }
+  ],
+  "paths": {
+    "/api/user/profile": {
+      "get": {
+        "tags": [
+          "1. 用户与角色管理"
+        ],
+        "summary": "获取个人画像",
+        "description": "获取当前用户的角色属性（年龄、职业等）及已绑定的监护人列表",
+        "operationId": "getProfile",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultUserVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "1. 用户与角色管理"
+        ],
+        "summary": "更新角色属性",
+        "description": "修改年龄段、性别、职业等非安全配置属性",
+        "operationId": "updateProfile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/config": {
+      "put": {
+        "tags": [
+          "1. 用户与角色管理"
+        ],
+        "summary": "更新风险配置",
+        "description": "手动调整风险灵敏度、判定阈值以及触发预警后的干预策略",
+        "operationId": "updateConfig",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateConfigDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/guardian/notify-policy": {
+      "put": {
+        "tags": [
+          "2. 监护人联动管理"
+        ],
+        "summary": "更新通知策略",
+        "description": "监护人设置接收预警的方式：1=实时推送 2=周期汇总",
+        "operationId": "updateNotifyPolicy",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateNotifyPolicyDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/register": {
+      "post": {
+        "tags": [
+          "1. 用户与角色管理"
+        ],
+        "summary": "用户注册",
+        "description": "网页端用户注册，注册成功后返回 Token",
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultString"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/login": {
+      "post": {
+        "tags": [
+          "1. 用户与角色管理"
+        ],
+        "summary": "用户登录",
+        "description": "网页端用户名密码登录，成功后返回 Token",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultString"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/report/generate": {
+      "post": {
+        "tags": [
+          "7. 安全报告模块"
+        ],
+        "summary": "按需生成安全报告",
+        "description": "指定时间范围（开始/结束日期），系统将自动扫描该期间的所有预警记录，生成含统计图表数据和专家建议的综合报告。",
+        "operationId": "generate",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateReportDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultReportVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/knowledge/upload": {
+      "post": {
+        "tags": [
+          "6. 知识库进化模块"
+        ],
+        "summary": "提交新诈骗案例",
+        "description": "上传包含最新诈骗套路的文件（文本、图片、音视频等），提交后系统将异步触发特征提取与向量化入库，提升 AI 的识别精准度。",
+        "operationId": "upload",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "多模态案例文件"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultString"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/guardian/wx-login": {
+      "post": {
+        "tags": [
+          "2. 监护人联动管理"
+        ],
+        "summary": "微信小程序登录",
+        "description": "监护人端专用，通过微信 code 换取 Token",
+        "operationId": "wxLogin",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WxLoginDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultString"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/guardian/whitelist": {
+      "get": {
+        "tags": [
+          "2. 监护人联动管理"
+        ],
+        "summary": "获取白名单列表",
+        "description": "获取当前用户的信任联系人/账号列表，用于减少误报",
+        "operationId": "getWhitelist",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultListWhitelistVO"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "2. 监护人联动管理"
+        ],
+        "summary": "添加白名单",
+        "description": "将被信任的联系人或账号信息加入白名单",
+        "operationId": "addWhitelist",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddWhitelistDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/guardian/intervention/{wardId}": {
+      "post": {
+        "tags": [
+          "2. 监护人联动管理"
+        ],
+        "summary": "远程干预推送",
+        "description": "监护人向指定的被监护人发送实时提醒消息（通过 WebSocket 下发）",
+        "operationId": "intervention",
+        "parameters": [
+          {
+            "name": "wardId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterventionDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/guardian/bind": {
+      "post": {
+        "tags": [
+          "2. 监护人联动管理"
+        ],
+        "summary": "用户绑定监护人",
+        "description": "被监护人通过手机号搜索并绑定其监护人",
+        "operationId": "bind",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BindGuardianDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultListBindVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/detect/multimodal": {
+      "post": {
+        "tags": [
+          "5. 多模态检测模块"
+        ],
+        "summary": "单次多模态检测",
+        "description": "非对话场景下的直接风险检测。支持文本、图片、长文本或语音文件地址。",
+        "operationId": "detect",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DetectDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultDetectResultVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/detect/batch": {
+      "post": {
+        "tags": [
+          "5. 多模态检测模块"
+        ],
+        "summary": "批量自动化检测与测评",
+        "description": "支持传入包含 label 的测试集，系统自动完成批处理检测并返回模型评估指标 (F1-score, Accuracy)",
+        "operationId": "detectBatch",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchDetectDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultBatchDetectResultVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/send": {
+      "post": {
+        "tags": [
+          "4. 智能对话模块"
+        ],
+        "summary": "发送咨询消息",
+        "description": "用户发起咨询。支持纯文本或文件（图片/语音等），返回 AI 回复及伴随的实时风险评估",
+        "operationId": "send",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SendMessageDTO"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultChatResponseVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user/memory": {
+      "get": {
+        "tags": [
+          "1. 用户与角色管理"
+        ],
+        "summary": "获取行为画像 (ML)",
+        "description": "供多模态 ML 服务拉取用户的“长短期记忆”画像，用于辅助判定",
+        "operationId": "getMemory",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultUserVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/report/list": {
+      "get": {
+        "tags": [
+          "7. 安全报告模块"
+        ],
+        "summary": "获取历史报告列表",
+        "description": "获取当前被监护人生成过的所有历史报告简洁列表（含时间跨度和核心摘要）。",
+        "operationId": "list",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultListReportVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/guardian/summary": {
+      "get": {
+        "tags": [
+          "2. 监护人联动管理"
+        ],
+        "summary": "查看被监护人安全汇总",
+        "description": "监护人主动查询其下所有被监护人的风险统计及最近预警记录",
+        "operationId": "summary",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultListWardSummaryVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chat/history": {
+      "get": {
+        "tags": [
+          "4. 智能对话模块"
+        ],
+        "summary": "获取当前会话历史",
+        "description": "获取当前用户的全量对话记录（含用户消息与 AI 回复）",
+        "operationId": "history",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultListChatMessageVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alert/history": {
+      "get": {
+        "tags": [
+          "3. 风险预警模块"
+        ],
+        "summary": "获取历史预警记录",
+        "description": "获取当前被监护用户的所有历史预警，含风险分、类型及简析",
+        "operationId": "history_1",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultListAlertVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/alert/detail/{id}": {
+      "get": {
+        "tags": [
+          "3. 风险预警模块"
+        ],
+        "summary": "获取预警详情",
+        "description": "基于预警 ID 获取单条记录的详细判定逻辑、关联聊天上下文等深度信息",
+        "operationId": "detail",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultAlertVO"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/guardian/unbind/{guardianId}": {
+      "delete": {
+        "tags": [
+          "2. 监护人联动管理"
+        ],
+        "summary": "解绑监护人",
+        "description": "被监护人主动解除与某位监护人的关联",
+        "operationId": "unbind",
+        "parameters": [
+          {
+            "name": "guardianId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResultVoid"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UpdateProfileDTO": {
+        "type": "object",
+        "description": "个人角色画像更新模型",
+        "properties": {
+          "ageGroup": {
+            "type": "integer",
+            "format": "int32",
+            "description": "年龄段: 1=儿童 2=青壮年 3=老年",
+            "example": 2,
+            "maximum": 3,
+            "minimum": 1
+          },
+          "gender": {
+            "type": "integer",
+            "format": "int32",
+            "description": "性别: 1=男 2=女",
+            "example": 1,
+            "maximum": 2,
+            "minimum": 1
+          },
+          "occupation": {
+            "type": "string",
+            "description": "职业",
+            "example": "财务人员"
+          }
+        }
+      },
+      "ResultVoid": {
+        "type": "object",
+        "description": "统一响应包装模型",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "状态码: 200=成功, 其余为异常码",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "success"
+          },
+          "data": {
+            "type": "object",
+            "description": "具体的业务数据内容"
+          }
+        }
+      },
+      "UpdateConfigDTO": {
+        "type": "object",
+        "description": "风险配置更新模型",
+        "properties": {
+          "riskPreference": {
+            "type": "integer",
+            "format": "int32",
+            "description": "风险灵敏度: 1=低 2=中 3=高",
+            "example": 2,
+            "maximum": 3,
+            "minimum": 1
+          },
+          "riskThreshold": {
+            "type": "number",
+            "description": "风险分阈值 (0~100)，超过此分值触发预警",
+            "example": 75.5,
+            "maximum": 100,
+            "minimum": 0
+          },
+          "interventionStrategy": {
+            "type": "integer",
+            "format": "int32",
+            "description": "干预策略: 1=弹窗提醒 2=语音阻断 3=自动联系监护人",
+            "example": 1,
+            "maximum": 3,
+            "minimum": 1
+          }
+        }
+      },
+      "UpdateNotifyPolicyDTO": {
+        "type": "object",
+        "description": "监护人通知偏好设置模型",
+        "properties": {
+          "notifyPolicy": {
+            "type": "integer",
+            "format": "int32",
+            "description": "通知策略: 1=实时推送 2=周期汇总",
+            "example": 1,
+            "maximum": 2,
+            "minimum": 1
+          }
+        },
+        "required": [
+          "notifyPolicy"
+        ]
+      },
+      "RegisterDTO": {
+        "type": "object",
+        "description": "用户注册请求体",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "用户名 (3~50字)",
+            "example": "zhangsan",
+            "maxLength": 50,
+            "minLength": 3
+          },
+          "password": {
+            "type": "string",
+            "description": "密码 (至少6位)",
+            "example": 123456,
+            "maxLength": 100,
+            "minLength": 6
+          }
+        },
+        "required": [
+          "password",
+          "username"
+        ]
+      },
+      "ResultString": {
+        "type": "object",
+        "description": "统一响应包装模型",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "状态码: 200=成功, 其余为异常码",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "success"
+          },
+          "data": {
+            "type": "string",
+            "description": "具体的业务数据内容"
+          }
+        }
+      },
+      "LoginDTO": {
+        "type": "object",
+        "description": "用户登录请求体",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "用户名",
+            "example": "zhangsan"
+          },
+          "password": {
+            "type": "string",
+            "description": "密码",
+            "example": 123456
+          }
+        },
+        "required": [
+          "password",
+          "username"
+        ]
+      },
+      "GenerateReportDTO": {
+        "type": "object",
+        "description": "安全报告生成请求模型",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "format": "date",
+            "description": "统计开始日期",
+            "example": "2024-03-01"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date",
+            "description": "统计结束日期",
+            "example": "2024-03-07"
+          }
+        },
+        "required": [
+          "endDate",
+          "startDate"
+        ]
+      },
+      "ReportVO": {
+        "type": "object",
+        "description": "安全监测报告响应模型",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "报告ID"
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date",
+            "description": "统计开始日期"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date",
+            "description": "统计结束日期"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "报告生成时间"
+          },
+          "totalAlerts": {
+            "type": "integer",
+            "format": "int32",
+            "description": "监测期内累计预警总次数"
+          },
+          "highSeverityCount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "高风险事件次数"
+          },
+          "midSeverityCount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "中风险事件次数"
+          },
+          "lowSeverityCount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "低风险事件次数"
+          },
+          "scamTypeStats": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "description": "诈骗类型统计分布 (Key: 类型名称, Value: 出现次数)",
+            "example": {
+              "刷单诈骗": 5,
+              "杀猪盘": 2
+            }
+          },
+          "summary": {
+            "type": "string",
+            "description": "AI 生成的监测期内风险趋势总结与防护建议"
+          }
+        }
+      },
+      "ResultReportVO": {
+        "type": "object",
+        "description": "统一响应包装模型",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "状态码: 200=成功, 其余为异常码",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ReportVO",
+            "description": "具体的业务数据内容"
+          }
+        }
+      },
+      "WxLoginDTO": {
+        "type": "object",
+        "description": "微信小程序登录模型",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "微信登录凭证 (code)",
+            "example": "033xxxxxxx"
+          },
+          "nickname": {
+            "type": "string",
+            "description": "微信昵称（可选，登录时顺带更新）",
+            "example": "张三监护人"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "AddWhitelistDTO": {
+        "type": "object",
+        "description": "添加白名单请求体",
+        "properties": {
+          "contactName": {
+            "type": "string",
+            "description": "联系人名称",
+            "example": "王医生"
+          },
+          "contactInfo": {
+            "type": "string",
+            "description": "联系方式 (电话/账号)",
+            "example": 13800138000
+          }
+        },
+        "required": [
+          "contactInfo",
+          "contactName"
+        ]
+      },
+      "InterventionDTO": {
+        "type": "object",
+        "description": "监护人远程干预模型",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "干预消息内容，将实时推送至被监护人端",
+            "example": "检测到疑似诈骗，请立即挂断电话！"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "BindGuardianDTO": {
+        "type": "object",
+        "description": "绑定监护人请求体",
+        "properties": {
+          "guardianPhone": {
+            "type": "string",
+            "description": "监护人注册时使用的手机号",
+            "example": 13800138001
+          },
+          "relation": {
+            "type": "string",
+            "description": "与监护人的关系 (如：父亲、母亲)",
+            "example": "父亲"
+          }
+        },
+        "required": [
+          "guardianPhone",
+          "relation"
+        ]
+      },
+      "BindVO": {
+        "type": "object",
+        "description": "监护人绑定关系视图模型",
+        "properties": {
+          "bindId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "绑定记录ID"
+          },
+          "guardianId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "监护人ID"
+          },
+          "guardianPhone": {
+            "type": "string",
+            "description": "监护人手机号"
+          },
+          "relation": {
+            "type": "string",
+            "description": "与监护人的关系"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "状态: 1=正常"
+          }
+        }
+      },
+      "ResultListBindVO": {
+        "type": "object",
+        "description": "统一响应包装模型",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "状态码: 200=成功, 其余为异常码",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "success"
+          },
+          "data": {
+            "type": "array",
+            "description": "具体的业务数据内容",
+            "items": {
+              "$ref": "#/components/schemas/BindVO"
+            }
+          }
+        }
+      },
+      "DetectDTO": {
+        "type": "object",
+        "description": "多模态风险检测模型",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "待检测的文本内容 (如聊天记录、短信、网页正文)",
+            "example": "恭喜您中奖了，请点击链接领取：http://xxx.cn"
+          },
+          "fileUrl": {
+            "type": "string",
+            "description": "待检测的文件地址 (如转账截图、诈骗语音等)",
+            "example": "http://example.com/oss/scam_call.mp3"
+          }
+        }
+      },
+      "DetectResultVO": {
+        "type": "object",
+        "description": "单次风险检测结果模型",
+        "properties": {
+          "recordId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "检测记录唯一ID",
+            "example": 1001
+          },
+          "riskScore": {
+            "type": "number",
+            "format": "double",
+            "description": "风险评估得分 (0~100)",
+            "example": 89.5
+          },
+          "riskLevel": {
+            "type": "string",
+            "description": "风险等级标识",
+            "example": "HIGH"
+          },
+          "scamType": {
+            "type": "string",
+            "description": "判定的具体诈骗类型",
+            "example": "虚假投资理财诈骗"
+          },
+          "confidence": {
+            "type": "number",
+            "format": "double",
+            "description": "算法置信度 (0~1)",
+            "example": 0.98
+          },
+          "riskAction": {
+            "type": "string",
+            "description": "系统建议采取的即时行动干预"
+          },
+          "evidence": {
+            "type": "array",
+            "description": "支持风险判定的核心证据片段列表",
+            "items": {
+              "type": "string"
+            }
+          },
+          "summary": {
+            "type": "string",
+            "description": "本次检测结果的综合风险摘要"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "检测触发时间"
+          }
+        }
+      },
+      "ResultDetectResultVO": {
+        "type": "object",
+        "description": "统一响应包装模型",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "状态码: 200=成功, 其余为异常码",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/DetectResultVO",
+            "description": "具体的业务数据内容"
+          }
+        }
+      },
+      "BatchDetectDTO": {
+        "type": "object",
+        "description": "批量自动化测评请求模型",
+        "properties": {
+          "items": {
+            "type": "array",
+            "description": "自动化测评数据集列表",
+            "items": {
+              "$ref": "#/components/schemas/BatchDetectItemDTO"
+            }
+          }
+        }
+      },
+      "BatchDetectItemDTO": {
+        "type": "object",
+        "description": "批量测评数据项模型",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "待检测的文本内容 (如聊天记录、短信、网页正文)",
+            "example": "恭喜您中奖了，请点击链接领取：http://xxx.cn"
+          },
+          "fileUrl": {
+            "type": "string",
+            "description": "待检测的文件地址 (如转账截图、诈骗语音等)",
+            "example": "http://example.com/oss/scam_call.mp3"
+          },
+          "expectedIsScam": {
+            "type": "integer",
+            "format": "int32",
+            "description": "预期结果标签: 1=诈骗(黑样本), 0=正常(白样本)",
+            "example": 1
+          }
+        }
+      },
+      "BatchDetectResultVO": {
+        "type": "object",
+        "description": "批量自动化测评结果模型 (含 F1/准确率指标)",
+        "properties": {
+          "totalCount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "测评样本总数"
+          },
+          "truePositive": {
+            "type": "integer",
+            "format": "int32",
+            "description": "真正例 (正确识别为诈骗)"
+          },
+          "falsePositive": {
+            "type": "integer",
+            "format": "int32",
+            "description": "假正例 (误报)"
+          },
+          "trueNegative": {
+            "type": "integer",
+            "format": "int32",
+            "description": "真负例 (正确识别为正常)"
+          },
+          "falseNegative": {
+            "type": "integer",
+            "format": "int32",
+            "description": "假负例 (漏报)"
+          },
+          "accuracy": {
+            "type": "number",
+            "format": "double",
+            "description": "准确率 (Accuracy)"
+          },
+          "precision": {
+            "type": "number",
+            "format": "double",
+            "description": "精确率 (Precision)"
+          },
+          "recall": {
+            "type": "number",
+            "format": "double",
+            "description": "召回率 (Recall)"
+          },
+          "f1Score": {
+            "type": "number",
+            "format": "double",
+            "description": "F1-score 综合评估指标"
+          },
+          "detailResults": {
+            "type": "array",
+            "description": "每一个测评项的明细检测结果列表",
+            "items": {
+              "$ref": "#/components/schemas/DetectResultVO"
+            }
+          }
+        }
+      },
+      "ResultBatchDetectResultVO": {
+        "type": "object",
+        "description": "统一响应包装模型",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "状态码: 200=成功, 其余为异常码",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/BatchDetectResultVO",
+            "description": "具体的业务数据内容"
+          }
+        }
+      },
+      "SendMessageDTO": {
+        "type": "object",
+        "description": "发送对话消息模型",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "消息文本内容",
+            "example": "这张图片里的中奖信息是真的吗？"
+          },
+          "fileUrl": {
+            "type": "string",
+            "description": "已上传文件的 URL（如图片、语音、链接截图等）",
+            "example": "http://example.com/oss/a.jpg"
+          }
+        }
+      },
+      "ChatResponseVO": {
+        "type": "object",
+        "description": "对话发送响应模型 (含风险评估结果)",
+        "properties": {
+          "reply": {
+            "type": "string",
+            "description": "AI 生成的实时回复建议内容"
+          },
+          "riskScore": {
+            "type": "number",
+            "format": "double",
+            "description": "实时风险评估得分 (0~100)",
+            "example": 85.2
+          },
+          "riskLevel": {
+            "type": "string",
+            "description": "风险等级标识",
+            "example": "HIGH"
+          },
+          "scamType": {
+            "type": "string",
+            "description": "判定的具体诈骗类型",
+            "example": "公检法诈骗"
+          },
+          "riskAction": {
+            "type": "string",
+            "description": "系统建议采取的即时行动干预"
+          },
+          "summary": {
+            "type": "string",
+            "description": "本次交流中体现的风险点核心摘要"
+          },
+          "recommendedQuestions": {
+            "type": "array",
+            "description": "AI 推荐的后续追问问题，用于驱动深度对话确认",
+            "items": {
+              "$ref": "#/components/schemas/RecommendedQuestion"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "处理完成时间"
+          }
+        }
+      },
+      "RecommendedQuestion": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "question": {
+            "type": "string"
+          }
+        }
+      },
+      "ResultChatResponseVO": {
+        "type": "object",
+        "description": "统一响应包装模型",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "状态码: 200=成功, 其余为异常码",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/ChatResponseVO",
+            "description": "具体的业务数据内容"
+          }
+        }
+      },
+      "ResultUserVO": {
+        "type": "object",
+        "description": "统一响应包装模型",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "状态码: 200=成功, 其余为异常码",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/UserVO",
+            "description": "具体的业务数据内容"
+          }
+        }
+      },
+      "UserVO": {
+        "type": "object",
+        "description": "用户信息响应模型",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "用户ID"
+          },
+          "username": {
+            "type": "string",
+            "description": "用户名"
+          },
+          "ageGroup": {
+            "type": "integer",
+            "format": "int32",
+            "description": "年龄段: 1=儿童 2=青壮年 3=老年"
+          },
+          "gender": {
+            "type": "integer",
+            "format": "int32",
+            "description": "性别: 1=男 2=女"
+          },
+          "occupation": {
+            "type": "string",
+            "description": "职业"
+          },
+          "riskPreference": {
+            "type": "integer",
+            "format": "int32",
+            "description": "风险灵敏度: 1=低 2=中 3=高"
+          },
+          "riskThreshold": {
+            "type": "number",
+            "description": "当前风险分阈值"
+          },
+          "interventionStrategy": {
+            "type": "integer",
+            "format": "int32",
+            "description": "干预策略: 1=弹窗提醒 2=语音阻断 3=自动联系监护人"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "账号创建时间"
+          },
+          "binds": {
+            "type": "array",
+            "description": "已绑定的监护人列表",
+            "items": {
+              "$ref": "#/components/schemas/BindVO"
+            }
+          }
+        }
+      },
+      "ResultListReportVO": {
+        "type": "object",
+        "description": "统一响应包装模型",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "状态码: 200=成功, 其余为异常码",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "success"
+          },
+          "data": {
+            "type": "array",
+            "description": "具体的业务数据内容",
+            "items": {
+              "$ref": "#/components/schemas/ReportVO"
+            }
+          }
+        }
+      },
+      "ResultListWhitelistVO": {
+        "type": "object",
+        "description": "统一响应包装模型",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "状态码: 200=成功, 其余为异常码",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "success"
+          },
+          "data": {
+            "type": "array",
+            "description": "具体的业务数据内容",
+            "items": {
+              "$ref": "#/components/schemas/WhitelistVO"
+            }
+          }
+        }
+      },
+      "WhitelistVO": {
+        "type": "object",
+        "description": "白名单条目响应模型",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "记录唯一ID"
+          },
+          "contactName": {
+            "type": "string",
+            "description": "联系人名称"
+          },
+          "contactInfo": {
+            "type": "string",
+            "description": "具体联系方式 (电话、微信号或卡号)"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "添加时间"
+          }
+        }
+      },
+      "AlertVO": {
+        "type": "object",
+        "description": "风险预警响应模型",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "预警记录ID"
+          },
+          "scamType": {
+            "type": "string",
+            "description": "疑似诈骗类型",
+            "example": "刷单返利诈骗"
+          },
+          "reasoning": {
+            "type": "string",
+            "description": "AI 判定理由与依据汇总"
+          },
+          "severity": {
+            "type": "integer",
+            "format": "int32",
+            "description": "风险严重程度: 1=低 2=中 3=高",
+            "example": 2
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "触发时间"
+          }
+        }
+      },
+      "ResultListWardSummaryVO": {
+        "type": "object",
+        "description": "统一响应包装模型",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "状态码: 200=成功, 其余为异常码",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "success"
+          },
+          "data": {
+            "type": "array",
+            "description": "具体的业务数据内容",
+            "items": {
+              "$ref": "#/components/schemas/WardSummaryVO"
+            }
+          }
+        }
+      },
+      "WardSummaryVO": {
+        "type": "object",
+        "description": "被监护人安全汇总模型",
+        "properties": {
+          "wardId": {
+            "type": "integer",
+            "format": "int64",
+            "description": "被监护人用户ID"
+          },
+          "wardUsername": {
+            "type": "string",
+            "description": "被监护人用户名"
+          },
+          "weeklyAlertCount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "近7天累计预警次数"
+          },
+          "weeklyHighCount": {
+            "type": "integer",
+            "format": "int32",
+            "description": "近7天高风险预警次数"
+          },
+          "recentAlerts": {
+            "type": "array",
+            "description": "最近5条历史预警详细信息",
+            "items": {
+              "$ref": "#/components/schemas/AlertVO"
+            }
+          },
+          "latestReportSummary": {
+            "type": "string",
+            "description": "最新生成的安全报告核心摘要文字"
+          }
+        }
+      },
+      "ChatMessageVO": {
+        "type": "object",
+        "description": "历史对话消息模型",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64",
+            "description": "消息ID"
+          },
+          "role": {
+            "type": "string",
+            "description": "发送者角色: user=用户, assistant=AI助手",
+            "example": "user"
+          },
+          "content": {
+            "type": "string",
+            "description": "消息文本内容"
+          },
+          "fileUrl": {
+            "type": "string",
+            "description": "关联的文件/图片URL"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "发送时间"
+          }
+        }
+      },
+      "ResultListChatMessageVO": {
+        "type": "object",
+        "description": "统一响应包装模型",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "状态码: 200=成功, 其余为异常码",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "success"
+          },
+          "data": {
+            "type": "array",
+            "description": "具体的业务数据内容",
+            "items": {
+              "$ref": "#/components/schemas/ChatMessageVO"
+            }
+          }
+        }
+      },
+      "ResultListAlertVO": {
+        "type": "object",
+        "description": "统一响应包装模型",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "状态码: 200=成功, 其余为异常码",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "success"
+          },
+          "data": {
+            "type": "array",
+            "description": "具体的业务数据内容",
+            "items": {
+              "$ref": "#/components/schemas/AlertVO"
+            }
+          }
+        }
+      },
+      "ResultAlertVO": {
+        "type": "object",
+        "description": "统一响应包装模型",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "format": "int32",
+            "description": "状态码: 200=成功, 其余为异常码",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "提示信息",
+            "example": "success"
+          },
+          "data": {
+            "$ref": "#/components/schemas/AlertVO",
+            "description": "具体的业务数据内容"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "name": "BearerAuth",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

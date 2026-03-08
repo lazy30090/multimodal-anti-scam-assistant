@@ -11,11 +11,14 @@ import lombok.Data;
 @Schema(description = "添加白名单请求体")
 public class AddWhitelistDTO {
 
-    @Schema(description = "联系人名称", example = "王医生")
+    @Schema(description = "联系人名称", example = "张三")
     @NotBlank(message = "联系人名称不能为空")
-    private String contactName;
+    private String name;
 
     @Schema(description = "联系方式 (电话/账号)", example = "13800138000")
     @NotBlank(message = "联系方式不能为空")
     private String contactInfo;
+
+    @Schema(description = "联系类型", example = "PHONE")
+    private String contactType;
 }

@@ -5,6 +5,8 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * 更新用户角色画像请求体
  */
@@ -24,4 +26,7 @@ public class UpdateProfileDTO {
 
     @Schema(description = "职业", example = "财务人员")
     private String occupation;
+
+    @Schema(description = "风险分阈值 (0~100)", example = "75.50")
+    private BigDecimal riskThreshold;
 }

@@ -26,5 +26,6 @@ public class GuardianWhitelist {
     private Long userId;
     private String contactName;
     private String contactInfo;
+    @com.baomidou.mybatisplus.annotation.TableField(fill = com.baomidou.mybatisplus.annotation.FieldFill.INSERT)
     private LocalDateTime createdAt;
 }

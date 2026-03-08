@@ -78,17 +78,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .set(dto.getAgeGroup() != null, User::getAgeGroup, dto.getAgeGroup())
                 .set(dto.getGender() != null, User::getGender, dto.getGender())
                 .set(dto.getOccupation() != null, User::getOccupation, dto.getOccupation())
+                .set(dto.getRiskThreshold() != null, User::getRiskThreshold, dto.getRiskThreshold())
                 .update();
     }
 
     @Override
     public void updateConfig(Long userId, UpdateConfigDTO dto) {
+        Integer strategy = dto.getInterventionStrategy();
+        if (dto.getNotifyPolicy() != null) {
+            strategy = "IMMEDIATE".equals(dto.getNotifyPolicy()) ? 1 : 2;
+        }
         lambdaUpdate()
                 .eq(User::getId, userId)
                 .set(dto.getRiskPreference() != null, User::getRiskPreference, dto.getRiskPreference())
                 .set(dto.getRiskThreshold() != null, User::getRiskThreshold, dto.getRiskThreshold())
-                .set(dto.getInterventionStrategy() != null, User::getInterventionStrategy,
-                        dto.getInterventionStrategy())
+                .set(strategy != null, User::getInterventionStrategy, strategy)
                 .update();
     }
 

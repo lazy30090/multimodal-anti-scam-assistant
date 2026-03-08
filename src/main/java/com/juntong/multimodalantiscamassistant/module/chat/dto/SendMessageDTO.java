@@ -11,7 +11,10 @@ import lombok.Data;
 public class SendMessageDTO {
 
     @Schema(description = "消息文本内容", example = "这张图片里的中奖信息是真的吗？")
-    private String text;
+    private String content;
+
+    @Schema(description = "消息形态类型", example = "TEXT")
+    private String type;
 
     @Schema(description = "已上传文件的 URL（如图片、语音、链接截图等）", example = "http://example.com/oss/a.jpg")
     private String fileUrl;

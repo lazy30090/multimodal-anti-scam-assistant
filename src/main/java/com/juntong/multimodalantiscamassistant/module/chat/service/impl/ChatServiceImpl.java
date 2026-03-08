@@ -46,7 +46,7 @@ public class ChatServiceImpl extends ServiceImpl<ChatMessageMapper, ChatMessage>
 
         // 组装 ML 请求
         MlPredictRequest request = MlPredictRequest.builder()
-                .text(dto.getText())
+                .text(dto.getContent())
                 .fileUrl(dto.getFileUrl())
                 .userProfile(Map.of(
                         "ageGroup", user.getAgeGroup() != null ? user.getAgeGroup() : 0,
@@ -58,7 +58,7 @@ public class ChatServiceImpl extends ServiceImpl<ChatMessageMapper, ChatMessage>
         MlPredictResult result = mlServiceClient.predict(request);
 
         // 存用户消息
-        saveMessage(userId, "user", dto.getText(), dto.getFileUrl());
+        saveMessage(userId, "user", dto.getContent(), dto.getFileUrl());
 
         // 高风险触发预警
         if (result.getRiskScore() != null && result.getRiskScore() >= 70) {

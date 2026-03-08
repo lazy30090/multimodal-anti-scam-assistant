@@ -139,7 +139,7 @@ public class GuardianServiceImpl extends ServiceImpl<GuardianMapper, Guardian> i
     public void addWhitelist(Long userId, AddWhitelistDTO dto) {
         GuardianWhitelist entry = GuardianWhitelist.builder()
                 .userId(userId)
-                .contactName(dto.getContactName())
+                .contactName(dto.getName())
                 .contactInfo(dto.getContactInfo())
                 .build();
         whitelistMapper.insert(entry);
@@ -147,9 +147,10 @@ public class GuardianServiceImpl extends ServiceImpl<GuardianMapper, Guardian> i
 
     @Override
     public void updateNotifyPolicy(Long guardianId, UpdateNotifyPolicyDTO dto) {
+        Integer policy = "IMMEDIATE".equals(dto.getNotifyPolicy()) ? 1 : 2;
         lambdaUpdate()
                 .eq(Guardian::getId, guardianId)
-                .set(Guardian::getNotifyPolicy, dto.getNotifyPolicy())
+                .set(Guardian::getNotifyPolicy, policy)
                 .update();
     }
 

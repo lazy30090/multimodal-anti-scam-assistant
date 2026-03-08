@@ -25,8 +25,8 @@ public class ChatController {
     @Operation(summary = "发送咨询消息", description = "用户发起咨询。支持纯文本或文件（图片/语音等），返回 AI 回复及伴随的实时风险评估")
     @PostMapping("/send")
     public Result<ChatResponseVO> send(@RequestBody SendMessageDTO dto) {
-        if ((dto.getText() == null || dto.getText().isBlank()) && dto.getFileUrl() == null) {
-            throw new BusinessException(400, "text 和 fileUrl 至少填一个");
+        if ((dto.getContent() == null || dto.getContent().isBlank()) && dto.getFileUrl() == null) {
+            throw new BusinessException(400, "content 和 fileUrl 至少填一个");
         }
         return Result.ok(chatService.send(currentId(), dto));
     }

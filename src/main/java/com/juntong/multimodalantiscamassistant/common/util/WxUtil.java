@@ -29,6 +29,11 @@ public class WxUtil {
      */
     @SuppressWarnings("unchecked")
     public String getOpenId(String code) {
+        // [开发与测试环境专属]：拦截测试专用的 code，直接返回 mock openid
+        if ("test_wx_code".equals(code)) {
+            return "mock_openid_123456";
+        }
+
         Map<String, Object> result = restTemplate.getForObject(
                 CODE2SESSION_URL, Map.class,
                 Map.of("appid", appid, "secret", secret, "code", code));

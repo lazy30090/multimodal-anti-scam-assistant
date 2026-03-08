@@ -1,6 +1,7 @@
 package com.juntong.multimodalantiscamassistant.module.user.controller;
 
 import com.juntong.multimodalantiscamassistant.common.Result;
+import com.juntong.multimodalantiscamassistant.common.util.JwtUtil;
 import com.juntong.multimodalantiscamassistant.module.user.dto.LoginDTO;
 import com.juntong.multimodalantiscamassistant.module.user.dto.RegisterDTO;
 import com.juntong.multimodalantiscamassistant.module.user.dto.UpdateConfigDTO;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Tag(name = "1. 用户与角色管理", description = "处理用户注册、登录、个人画像及风险配置")
 @RestController
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     @Operation(summary = "用户注册", description = "网页端用户注册，注册成功后返回 Token")
     @PostMapping("/register")
@@ -32,6 +35,16 @@ public class UserController {
     @PostMapping("/login")
     public Result<String> login(@RequestBody @Validated LoginDTO dto) {
         return Result.ok(userService.login(dto));
+    }
+
+    @Operation(summary = "用户退出", description = "将当前 Token 打入后端 Redis 黑名单废弃，实现安全登出")
+    @PostMapping("/logout")
+    public Result<Void> logout(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            jwtUtil.invalidateToken(header.substring(7));
+        }
+        return Result.ok();
     }
 
     @Operation(summary = "获取个人画像", description = "获取当前用户的角色属性（年龄、职业等）及已绑定的监护人列表")

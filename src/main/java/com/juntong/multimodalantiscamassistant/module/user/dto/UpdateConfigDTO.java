@@ -27,4 +27,7 @@ public class UpdateConfigDTO {
     @Min(value = 1, message = "干预策略取值范围: 1~3")
     @Max(value = 3, message = "干预策略取值范围: 1~3")
     private Integer interventionStrategy;
+
+    @Schema(description = "通知策略", example = "IMMEDIATE")
+    private String notifyPolicy;
 }
