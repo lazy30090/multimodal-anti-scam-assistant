@@ -17,8 +17,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.nio.charset.StandardCharsets;
+import com.juntong.multimodalantiscamassistant.common.exception.BusinessException;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -28,37 +33,55 @@ public class ChatServiceImpl extends ServiceImpl<ChatMessageMapper, ChatMessage>
     private final AlertService alertService;
     private final UserMapper userMapper;
 
+    /** HTTP URL 嗅探正则 */
+    private static final Pattern URL_PATTERN = Pattern.compile("(?i)(http|https)://.*");
+
     /** 发送消息，返回 AI 回复 + 风险评估 */
     public ChatResponseVO send(Long userId, SendMessageDTO dto) {
+
+        // --- 1. 接入校验与基础清洗 ---
+        String rawContent = dto.getContent();
+        // 清洗：去除两端空格并强制转化为规整的 UTF-8 防止越界乱码
+        String content = rawContent == null ? ""
+                : new String(rawContent.trim().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+        String fileUrl = dto.getFileUrl() == null ? "" : dto.getFileUrl().trim();
+
+        // 核心阻断：内容不允许双空
+        if (!StringUtils.hasText(content) && !StringUtils.hasText(fileUrl)) {
+            throw new BusinessException(400, "非法接入，发送的文本或图片不能为空");
+        }
+
+        // --- 2. 基础安全校验 ---
+        // 利用正则判断文本中是否包含外部 URL 并给 ML 报告打上印记
+        boolean hasUrl = StringUtils.hasText(content) && URL_PATTERN.matcher(content).find();
+
         User user = userMapper.selectById(userId);
 
-        // 取最近 10 条历史作为多轮上下文（DESC取最新，再反转成时间正序）
-        List<ChatMessage> history = new java.util.ArrayList<>(lambdaQuery()
-                .eq(ChatMessage::getUserId, userId)
-                .orderByDesc(ChatMessage::getCreatedAt)
-                .last("LIMIT 10")
-                .list());
-        java.util.Collections.reverse(history);
+        // --- 3. (无需上下文特征保留) ---
 
-        List<Map<String, String>> contextHistory = history.stream()
-                .map(m -> Map.of("role", m.getRole(), "content", m.getContent()))
-                .toList();
+        // --- 4. 元数据与特征补全 ---
+        // 封装灵活字典，将时间、来源与用户画像聚合
+        Map<String, Object> metaProfile = new HashMap<>();
+        metaProfile.put("timestamp", System.currentTimeMillis()); // 请求时间戳
+        metaProfile.put("inputType", StringUtils.hasText(fileUrl) ? "MULTIMODAL" : "TEXT"); // 输入来源标记
+        metaProfile.put("containsHyperlink", hasUrl); // 安全感知预警标注
 
-        // 组装 ML 请求
+        metaProfile.put("userId", userId);
+        metaProfile.put("ageGroup", user.getAgeGroup() != null ? user.getAgeGroup() : 0);
+        metaProfile.put("occupation", user.getOccupation() != null ? user.getOccupation() : "");
+        metaProfile.put("riskThreshold", user.getRiskThreshold() != null ? user.getRiskThreshold() : 70);
+
+        // 组装 ML 预测请求载体
         MlPredictRequest request = MlPredictRequest.builder()
-                .text(dto.getContent())
-                .fileUrl(dto.getFileUrl())
-                .userProfile(Map.of(
-                        "ageGroup", user.getAgeGroup() != null ? user.getAgeGroup() : 0,
-                        "occupation", user.getOccupation() != null ? user.getOccupation() : "",
-                        "riskThreshold", user.getRiskThreshold() != null ? user.getRiskThreshold() : 70))
-                .conversationHistory(contextHistory)
+                .text(content)
+                .fileUrl(StringUtils.hasText(fileUrl) ? fileUrl : null)
+                .userProfile(metaProfile)
                 .build();
 
         MlPredictResult result = mlServiceClient.predict(request);
 
         // 存用户消息
-        saveMessage(userId, "user", dto.getContent(), dto.getFileUrl());
+        saveMessage(userId, "user", content, StringUtils.hasText(fileUrl) ? fileUrl : null);
 
         // 高风险触发预警
         if (result.getRiskScore() != null && result.getRiskScore() >= 70) {

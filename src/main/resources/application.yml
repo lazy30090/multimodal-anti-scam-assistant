@@ -7,7 +7,7 @@ spring:
 
   # 数据库配置
   datasource:
-    url: jdbc:mysql://localhost:3306/anti_scam?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://anti-scam-mysql:3306/anti_scam?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -15,7 +15,7 @@ spring:
   # Redis 配置
   data:
     redis:
-      host: localhost
+      host: anti-scam-redis
       port: 6379
       password:           
       database: 0
@@ -26,6 +26,10 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 100MB
+
+  # 自定义上传文件的落盘目标区
+file:
+  upload-dir: ./uploads/
 
 # MyBatis-Plus 配置
 mybatis-plus:

@@ -29,9 +29,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // 公开接口：注册、登录
+                        // 公开接口：注册、登录与多模态文件公开读权限
                         .requestMatchers("/api/user/register", "/api/user/login",
                                 "/api/guardian/wx-login",
+                                "/uploads/**",
                                 "/swagger-ui/**", "/v3/api-docs/**")
                         .permitAll()
                         // 其他所有接口需要认证

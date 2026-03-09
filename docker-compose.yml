@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  anti-scam-api:
+    build: .
+    container_name: anti_scam_api
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      # 动态覆盖服务地址为容器名
+      - SPRING_DATASOURCE_URL=jdbc:mysql://anti-scam-mysql:3306/anti_scam?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=juntong_mysql_root_123!
+      - SPRING_DATA_REDIS_HOST=anti-scam-redis
+      - SPRING_DATA_REDIS_PORT=6379
+    depends_on:
+      - anti-scam-mysql
+      - anti-scam-redis
+    restart: always
+    networks:
+      - anti_scam_net
+
+  anti-scam-mysql:
+    image: mysql:8.0
+    container_name: anti_scam_mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=juntong_mysql_root_123!
+      - MYSQL_DATABASE=anti_scam
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: always
+    networks:
+      - anti_scam_net
+
+  anti-scam-redis:
+    image: redis:7.0-alpine
+    container_name: anti_scam_redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    restart: always
+    networks:
+      - anti_scam_net
+
+volumes:
+  mysql_data:
+  redis_data:
+
+
+networks:
+  anti_scam_net:
+    driver: bridge
